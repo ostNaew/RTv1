@@ -12,7 +12,7 @@
 
 #ifndef RTV_H
 # define RTV_H
-# include <SDL.h>
+# include "../sdl2.0/include/SDL.h"
 # include "libft.h"
 # include <OpenCL/opencl.h>
 # include "vector.h"
