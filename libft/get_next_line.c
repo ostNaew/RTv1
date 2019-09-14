@@ -3,103 +3,85 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maheiden <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: efeeney <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/03 17:24:50 by maheiden          #+#    #+#             */
-/*   Updated: 2019/01/16 19:38:30 by maheiden         ###   ########.fr       */
+/*   Created: 2018/12/08 16:00:05 by efeeney           #+#    #+#             */
+/*   Updated: 2018/12/08 16:00:10 by efeeney          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static char			*ft_strjoin_freed(char **data, char *buf)
+void	swap_new(char **arr, int fd, int len)
 {
-	char		*sjoin;
-	size_t		i;
+	char *temp;
 
-	i = ft_strlen(*data) + ft_strlen(buf);
-	if (!(sjoin = ft_strnew(i)))
-		return (NULL);
-	ft_strcpy(sjoin, *data);
-	ft_strcat(sjoin, buf);
-	ft_strdel(data);
-	return (sjoin);
+	temp = ft_strdup(&arr[fd][len + 1]);
+	free(arr[fd]);
+	arr[fd] = temp;
 }
 
-static char			*get_line(char **data)
+void	swap_next(char **arr, int fd, char *buf)
 {
-	char			*res;
-	char			*tmp;
-	size_t			i;
+	char *temp;
 
-	i = 0;
-	if (!(tmp = ft_strdup(*data)))
-		return (NULL);
-	while (tmp[i] != '\n' && tmp[i])
-		i++;
-	if (!(res = ft_strnew(i)))
-		return (NULL);
-	ft_strncpy(res, *data, i);
-	ft_strdel(data);
-	if (i < ft_strlen(tmp))
-	{
-		if (!(*data = ft_strdup(tmp + i + 1)))
-			return (NULL);
-	}
+	temp = ft_strjoin(arr[fd], buf);
+	free(arr[fd]);
+	arr[fd] = temp;
+}
+
+int		check_error(int ret, char **arr, int fd)
+{
+	if (ret < 0)
+		return (-1);
+	else if (ret == 0 && (arr[fd] == NULL || arr[fd][0] == '\0'))
+		return (0);
 	else
-	{
-		if (!(*data = ft_strdup("\0")))
-			return (NULL);
-	}
-	ft_strdel(&tmp);
-	return (res);
+		return (1);
 }
 
-static t_file		*find_fd(t_file **stat_lst, int fd)
+int		get_newline(char **arr, char **line, int fd)
 {
-	t_file			*tmp;
+	int		len;
 
-	tmp = *stat_lst;
-	while (tmp)
+	len = 0;
+	while (arr[fd][len] != '\n' && arr[fd][len] != '\0')
+		len++;
+	if (arr[fd][len] == '\n')
 	{
-		if (tmp->fd == fd)
-			return (tmp);
-		tmp = tmp->next;
+		*line = ft_strsub(arr[fd], 0, len);
+		swap_new(arr, fd, len);
 	}
-	if (!(tmp = (t_file *)malloc(sizeof(t_file))))
-		return (NULL);
-	if (!(tmp->data = ft_strnew(0)))
-		return (NULL);
-	tmp->fd = fd;
-	tmp->next = *stat_lst;
-	*stat_lst = tmp;
-	return (tmp);
+	else if (arr[fd][len] == '\0')
+	{
+		*line = ft_strdup(arr[fd]);
+		ft_strdel(&arr[fd]);
+	}
+	return (1);
 }
 
-int					get_next_line(const int fd, char **line)
+int		get_next_line(const int fd, char **line)
 {
-	static	t_file	*stat_lst;
-	int				fdr;
-	t_file			*current_lst;
-	char			buf[BUFF_SIZE + 1];
+	static char	*arr[1];
+	char		buf[BUFF_SIZE + 1];
+	int			ret;
+	int			err;
 
-	if (fd < 0 || !line || read(fd, buf, 0) < 0)
+	if (fd < 0 || line == NULL)
 		return (-1);
-	if (!(current_lst = find_fd(&stat_lst, fd)))
-		return (-1);
-	fdr = 0;
-	while (!(ft_strchr(current_lst->data, '\n')) &&
-			(fdr = read(fd, buf, BUFF_SIZE)) > 0)
+	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
 	{
-		buf[fdr] = '\0';
-		if (!(current_lst->data = ft_strjoin_freed(&current_lst->data, buf)))
-			return (-1);
+		buf[ret] = '\0';
+		if (arr[fd] == NULL)
+			arr[fd] = ft_strnew(1);
+		swap_next(arr, fd, buf);
 		if (ft_strchr(buf, '\n'))
 			break ;
 	}
-	if (!(ft_strlen(current_lst->data)))
-		return (0);
-	if (!(*line = get_line(&current_lst->data)))
+	err = check_error(ret, arr, fd);
+	if (err < 0)
 		return (-1);
-	return (1);
+	else if (!err)
+		return (0);
+	return (get_newline(arr, line, fd));
 }

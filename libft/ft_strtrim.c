@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maheiden <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: efeeney <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/28 19:39:25 by maheiden          #+#    #+#             */
-/*   Updated: 2018/12/08 20:47:10 by maheiden         ###   ########.fr       */
+/*   Created: 2018/12/01 15:29:03 by efeeney           #+#    #+#             */
+/*   Updated: 2018/12/01 15:29:04 by efeeney          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,25 @@
 
 char	*ft_strtrim(char const *s)
 {
-	size_t	start;
-	size_t	end;
-	char	*str;
+	int		i;
+	int		j;
+	char	*dest;
+	int		a;
 
+	a = 0;
+	i = 0;
 	if (!s)
 		return (NULL);
-	start = 0;
-	end = ft_strlen(s) - 1;
-	while ((s[start] == ' ' || s[start] == '\n' || s[start] == '\t'))
-		start++;
-	while (start < end && (s[end] == ' ' || s[end] == '\n' || s[end] == '\t'))
-		end--;
-	str = ft_strsub(s, start, end - start + 1);
-	return (str);
+	while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n')
+		i++;
+	j = ft_strlen(s) - 1;
+	while (j >= i && (s[j] == ' ' || s[j] == '\n' || s[j] == '\t'))
+		j--;
+	dest = ft_strnew(j - i);
+	if (dest == NULL)
+		return (NULL);
+	while (i <= j)
+		dest[a++] = s[i++];
+	dest[a] = '\0';
+	return (dest);
 }

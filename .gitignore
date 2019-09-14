@@ -1,3 +1,7 @@
+.idea
 RTv1
 /objs/
+/libft/*.o
 /libft/libft.a
+/sdl2.0/
+./cmake-build-default

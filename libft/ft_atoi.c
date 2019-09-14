@@ -3,38 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maheiden <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: efeeney <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/29 21:33:00 by maheiden          #+#    #+#             */
-/*   Updated: 2019/01/18 16:08:41 by maheiden         ###   ########.fr       */
+/*   Created: 2018/12/01 15:19:09 by efeeney           #+#    #+#             */
+/*   Updated: 2018/12/01 15:19:15 by efeeney          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
-	long long int	result;
-	int				flag;
-	long long int	temp;
+	int i;
+	int result;
+	int sign;
 
+	i = 0;
+	sign = 1;
 	result = 0;
-	flag = 1;
-	temp = 0;
-	while (*str == ' ' || *str == '\t' || *str == '\n'
-			|| *str == '\v' || *str == '\r' || *str == '\f')
-		str++;
-	if (*str == '-')
-		flag = -1;
-	if (*str == '+' || *str == '-')
-		str++;
-	while (ft_isdigit(*str))
+	if (ft_strlen(str) > 19 && ft_strlen(str) == 0)
+		return (-1);
+	while ((str[i] >= 8 && str[i] <= 13) || str[i] == 32)
+		i++;
+	if (str[i] == '-')
 	{
-		temp = result;
-		result = result * 10 + *str - '0';
-		if (result < temp)
-			return (flag == -1 ? 0 : -1);
-		str++;
+		sign = -1;
+		i++;
 	}
-	return (result * flag);
+	else if (str[i] == '+')
+		i++;
+	while (str[i] != '\0')
+	{
+		while ((str[i] >= 48 && str[i] <= 57))
+			result = (result * 10) + str[i++] - '0';
+		break ;
+	}
+	return (result * sign);
 }

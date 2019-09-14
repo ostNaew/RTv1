@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maheiden <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: efeeney <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/24 16:51:07 by maheiden          #+#    #+#             */
-/*   Updated: 2018/12/05 16:56:08 by maheiden         ###   ########.fr       */
+/*   Created: 2018/12/01 15:25:35 by efeeney           #+#    #+#             */
+/*   Updated: 2018/12/01 15:25:36 by efeeney          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,25 @@
 
 size_t	ft_strlcat(char *dst, const char *src, size_t size)
 {
-	size_t dst_count;
-	size_t src_count;
-	size_t i;
+	size_t		i;
+	size_t		j;
+	size_t		dst_len;
+	size_t		src_len;
 
-	dst_count = ft_strlen(dst);
-	src_count = ft_strlen(src);
 	i = 0;
-	if (size <= dst_count)
-		return (size + src_count);
-	while (src[i] != '\0' && (i < size - dst_count - 1))
-	{
-		dst[i + dst_count] = src[i];
+	dst_len = ft_strlen(dst);
+	src_len = ft_strlen(src);
+	if (size <= dst_len)
+		return (src_len + size);
+	while ((dst[i] != '\0') && i < (size - 1))
 		i++;
+	j = 0;
+	while (src[j] != '\0' && i < (size - 1))
+	{
+		dst[i] = src[j];
+		i++;
+		j++;
 	}
-	dst[i + dst_count] = '\0';
-	return (dst_count + src_count);
+	dst[i] = '\0';
+	return (dst_len + src_len);
 }
